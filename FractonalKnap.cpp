@@ -1,72 +1,57 @@
-// #include <iostream>
-// #include <vector>
-// #include <algorithm>
-#include <bits/stdc++.h>
+#include <iostream>
+#include <algorithm>
 
 using namespace std;
 
-struct Item
-{
-    int profit, weight;
+// Structure to store item information
+struct Item {
+    int profit;
+    int weight;
     double ratio;
 };
 
-// Compare function to sort items by decreasing profit/weight ratio
-bool cmp(Item a, Item b)
-{
+// Comparator function to sort by decreasing ratio
+bool compare(Item a, Item b) {
     return a.ratio > b.ratio;
 }
 
-double fractionalKnapsack(int capacity, vector<Item> &items)
-{
-    for (auto &item : items)
-    {
-        item.ratio = (double)item.profit / item.weight;
+int main() {
+    int n = 5;
+    int capacity = 12;
+
+    // Given profits and weights
+    int profits[] = {12, 1, 2, 1, 4};
+    int weights[] = {4, 2, 2, 1, 10};
+
+    // Create array of item
+    Item items[5];
+
+    for (int i = 0; i < n; i++) {
+        items[i].profit = profits[i];
+        items[i].weight = weights[i];
+        items[i].ratio = (double)profits[i] / weights[i];
     }
 
-    sort(items.begin(), items.end(), cmp);
+    // Sort items by ratio (greedy criteria)
+    sort(items, items + n, compare);
 
     double totalProfit = 0.0;
-    int remainingCapacity = capacity;
+    int currentWeight = 0;
 
-    for (int i = 0; i < items.size(); i++)
-    {
-        if (items[i].weight <= remainingCapacity)
-        {
+    for (int i = 0; i < n; i++) {
+        if (currentWeight + items[i].weight <= capacity) {
+            // Take full item
+            currentWeight += items[i].weight;
             totalProfit += items[i].profit;
-            remainingCapacity -= items[i].weight;
-        }
-        else
-        {
-            totalProfit += items[i].ratio * remainingCapacity;
-            break;
+        } else {
+            // Take fractional part
+            int remaining = capacity - currentWeight;
+            totalProfit += items[i].ratio * remaining;
+            break;  // Knapsack full
         }
     }
 
-    return totalProfit;
-}
-
-int main()
-{
-    int n, capacity;
-    cout << "Enter number of items: ";
-    cin >> n;
-    cout << "Enter knapsack capacity: ";
-    cin >> capacity;
-
-    vector<Item> items(n);
-    cout << "Enter profit and weight of each item:\n";
-    for (int i = 0; i < n; i++)
-    {
-        cout << "Item " << i + 1 << ":\n";
-        cout << "  Profit: ";
-        cin >> items[i].profit;
-        cout << "  Weight: ";
-        cin >> items[i].weight;
-    }
-
-    double maxProfit = fractionalKnapsack(capacity, items);
-    cout << "\nMaximum profit: " << maxProfit << endl;
+    cout << "Maximum profit earned = " << totalProfit << endl;
 
     return 0;
 }
