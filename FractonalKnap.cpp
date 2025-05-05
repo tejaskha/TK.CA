@@ -3,55 +3,58 @@
 
 using namespace std;
 
-// Structure to store item information
+// Structure to store weight and profit of each item
 struct Item {
-    int profit;
     int weight;
-    double ratio;
+    int profit;
 };
 
-// Comparator function to sort by decreasing ratio
+// Function to compare two items based on profit/weight ratio
 bool compare(Item a, Item b) {
-    return a.ratio > b.ratio;
+    double r1 = (double)a.profit / a.weight;
+    double r2 = (double)b.profit / b.weight;
+    return r1 > r2;
 }
 
-int main() {
-    int n = 5;
-    int capacity = 12;
-
-    // Given profits and weights
-    int profits[] = {12, 1, 2, 1, 4};
-    int weights[] = {4, 2, 2, 1, 10};
-
-    // Create array of item
-    Item items[5];
-
-    for (int i = 0; i < n; i++) {
-        items[i].profit = profits[i];
-        items[i].weight = weights[i];
-        items[i].ratio = (double)profits[i] / weights[i];
-    }
-
-    // Sort items by ratio (greedy criteria)
+// Function to get the maximum value in a fractional knapsack
+double fractionalKnapsack(int capacity, Item items[], int n) {
+    // Sort items by descending profit/weight ratio
     sort(items, items + n, compare);
 
-    double totalProfit = 0.0;
-    int currentWeight = 0;
+    double totalValue = 0.0;
 
-    for (int i = 0; i < n; i++) {
-        if (currentWeight + items[i].weight <= capacity) {
-            // Take full item
-            currentWeight += items[i].weight;
-            totalProfit += items[i].profit;
+    for (int i = 0; i < n && capacity > 0; i++) {
+        if (items[i].weight <= capacity) {
+            // Take the whole item
+            capacity -= items[i].weight;
+            totalValue += items[i].profit;
         } else {
-            // Take fractional part
-            int remaining = capacity - currentWeight;
-            totalProfit += items[i].ratio * remaining;
-            break;  // Knapsack full
+            // Take the fraction of the remaining item
+            totalValue += (double)items[i].profit * capacity / items[i].weight;
+            break;
         }
     }
 
-    cout << "Maximum profit earned = " << totalProfit << endl;
+    return totalValue;
+}
+
+int main() {
+    int n, capacity;
+    cout << "Enter number of items: ";
+    cin >> n;
+
+    Item items[100]; // Assume a max of 100 items
+
+    cout << "Enter weight and profit for each item:\n";
+    for (int i = 0; i < n; i++) {
+        cin >> items[i].weight >> items[i].profit;
+    }
+
+    cout << "Enter capacity of knapsack: ";
+    cin >> capacity;
+
+    double maxProfit = fractionalKnapsack(capacity, items, n);
+    cout << "Maximum profit: " << maxProfit << endl;
 
     return 0;
 }
