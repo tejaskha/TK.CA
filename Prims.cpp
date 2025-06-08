@@ -7,7 +7,7 @@ void prims(int n, int a[10][10], int source) {
 
     for (int i = 0; i < n; i++)
         s[i] = 0;
-
+  
     s[source] = 1;
 
     while (k <= n - 1) {
@@ -45,10 +45,6 @@ void prims(int n, int a[10][10], int source) {
 int main() {
     int a[10][10], n, source;
 
-    cout << "==========================================\n";
-    cout << "Find minimum cost spanning tree using Prim's Algorithm\n";
-    cout << "==========================================\n";
-
     cout << "\nEnter the number of vertices: ";
     cin >> n;
 
@@ -58,7 +54,7 @@ int main() {
             cin >> a[i][j];
 
     cout << "Enter the source node: ";
-    cin >> source;
+    cin >> source;        
 
     prims(n, a, source);
 
