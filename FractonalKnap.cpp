@@ -1,60 +1,46 @@
 #include <iostream>
-#include <algorithm>
-
 using namespace std;
 
-// Structure to store weight and profit of each item
-struct Item {
-    int weight;
-    int profit;
-};
+void fractionalKnapsack(int m, int n, float p[], float w[], float x[]) {
+    float U = m; // Remaining capacity
+    int i;
 
-// Function to compare two items based on profit/weight ratio
-bool compare(Item a, Item b) {
-    double r1 = (double)a.profit / a.weight;
-    double r2 = (double)b.profit / b.weight;
-    return r1 > r2;
-}
-
-// Function to get the maximum value in a fractional knapsack
-double fractionalKnapsack(int capacity, Item items[], int n) {
-    // Sort items by descending profit/weight ratio
-    sort(items, items + n, compare);
-
-    double totalValue = 0.0;
-
-    for (int i = 0; i < n && capacity > 0; i++) {
-        if (items[i].weight <= capacity) {
-            // Take the whole item
-            capacity -= items[i].weight;
-            totalValue += items[i].profit;
-        } else {
-            // Take the fraction of the remaining item
-            totalValue += (double)items[i].profit * capacity / items[i].weight;
-            break;
-        }
+    // Initialize solution vector
+    for (i = 0; i < n; i++) {
+        x[i] = 0.0;
     }
 
-    return totalValue;
+    // Fill knapsack
+    for (i = 0; i < n; i++) {
+        if (w[i] > U) {
+            break;
+        }
+        x[i] = 1.0;
+        U = U - w[i];
+    }
+
+    // Take fraction of next item
+    if (i < n) {
+        x[i] = U / w[i];
+    }
 }
 
 int main() {
-    int n, capacity;
-    cout << "Enter number of items: ";
-    cin >> n;
+    int n = 3;          // Number of items
+    int m = 50;         // Knapsack capacity
 
-    Item items[100]; // Assume a max of 100 items
+    float p[10] = {60, 100, 120};   // Profits
+    float w[10] = {10, 20, 30};     // Weights
+    float x[10];                    // Solution vector
 
-    cout << "Enter weight and profit for each item:\n";
+    // NOTE: The items must be sorted by p[i]/w[i] in descending order already
+
+    fractionalKnapsack(m, n, p, w, x);
+
+    cout << "Solution vector (fractions of items taken):\n";
     for (int i = 0; i < n; i++) {
-        cin >> items[i].weight >> items[i].profit;
+        cout << "x[" << i << "] = " << x[i] << endl;
     }
-
-    cout << "Enter capacity of knapsack: ";
-    cin >> capacity;
-
-    double maxProfit = fractionalKnapsack(capacity, items, n);
-    cout << "Maximum profit: " << maxProfit << endl;
 
     return 0;
 }
